@@ -59,4 +59,18 @@ public class Transfer {
 	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
+	
+	public String getTypeDesc() {
+		if (typeId == 1) {
+			return "Approve";
+		} else return "Send";
+	}
+	
+	public String getStatusDesc() {
+		if (statusId == 1) {
+			return "Pending";
+		} else if (statusId == 2) {
+			return "Approved";
+		} else return "Rejected";
+	}
 }
