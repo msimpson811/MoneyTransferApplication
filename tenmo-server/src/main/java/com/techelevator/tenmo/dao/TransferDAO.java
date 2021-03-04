@@ -7,9 +7,7 @@ import com.techelevator.tenmo.model.Transfer;
 
 public interface TransferDAO {
 	
-	BigDecimal withdraw(int fromUserId, BigDecimal amount);
 	
-	BigDecimal add(int toUserId, BigDecimal amount);
 	
 	Transfer getTransferById(int id);
 	
