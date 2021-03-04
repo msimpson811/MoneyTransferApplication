@@ -4,7 +4,11 @@ import java.math.BigDecimal;
 
 public interface TransferDAO {
 
-	void logTransfer();
+//	void logTransfer(int fromUserId, int toUserId, BigDecimal amount);
+	
+	BigDecimal withdraw(int fromUserId, BigDecimal amount);
+	
+	BigDecimal add(int toUserId, BigDecimal amount);
 	
 	Transfer getTransferById(int Id);
 	
