@@ -6,10 +6,12 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 
 import com.techelevator.tenmo.model.Transfer;
 
+@Component
 public class TransferSqlDAO implements TransferDAO {
 	
 	private JdbcTemplate jdbcTemplate;
@@ -65,6 +67,7 @@ public class TransferSqlDAO implements TransferDAO {
 		jdbcTemplate.update(sqlSaveTransferRecord, fromUserId, toUserId, amount);
 	}
 
+	// Not sure if we will actually need this method
 	@Override
 	public String getTransferStatus(int id) {
 		String sqlGetStatus = "SELECT transfer_status_desc FROM transfer_statuses WHERE transfer_status_id = ?;";
@@ -78,6 +81,7 @@ public class TransferSqlDAO implements TransferDAO {
 		return status;
 	}
 
+	// Not sure if we will actually need this method
 	@Override
 	public String getTransferType(int id) {
 		String sqlGetType = "SELECT transfer_type_desc FROM transfer_types WHERE transfer_type_id = ?;";
