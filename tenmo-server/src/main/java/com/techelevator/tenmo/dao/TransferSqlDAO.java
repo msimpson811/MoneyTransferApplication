@@ -6,9 +6,11 @@ import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.stereotype.Component;
 
 import com.techelevator.tenmo.model.Transfer;
 
+@Component
 public class TransferSqlDAO implements TransferDAO {
 	
 	private JdbcTemplate jdbcTemplate;
