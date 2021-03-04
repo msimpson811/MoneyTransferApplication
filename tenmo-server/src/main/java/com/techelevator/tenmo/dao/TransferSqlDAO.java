@@ -8,14 +8,19 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+
 import com.techelevator.tenmo.model.Transfer;
 
 @Component
 public class TransferSqlDAO implements TransferDAO {
 	
 	private JdbcTemplate jdbcTemplate;
+	private AccountDAO accountdao;
+	
+	
 
-    public TransferSqlDAO(JdbcTemplate jdbcTemplate) {
+    public TransferSqlDAO(JdbcTemplate jdbcTemplate, AccountDAO accountdao) {
+    	this.accountdao = accountdao;
         this.jdbcTemplate = jdbcTemplate;
     }
     
@@ -50,55 +55,11 @@ public class TransferSqlDAO implements TransferDAO {
 		return transfers;
 	}
 
-	// cut this one
-	@Override
-	public BigDecimal withdraw(int fromUserId, BigDecimal amount) {
-		String sqlGetStartingBalanceFromSender = "SELECT balance FROM accounts WHERE user_id = ?;";
-		
-		SqlRowSet balance = jdbcTemplate.queryForRowSet(sqlGetStartingBalanceFromSender, fromUserId);
-		
-		BigDecimal newBalance = new BigDecimal(0);
-		
-		while(balance.next()) {
-			String line = balance.getString("balance");
-			BigDecimal currBalance = new BigDecimal(line);
-			newBalance = currBalance.subtract(amount);
-		}
-		
-		String sqlUpdateBalance = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-		
-		jdbcTemplate.update(sqlUpdateBalance, fromUserId, newBalance);
-		
-		
-		return newBalance;
-	}
-
-	// cut this one
-	@Override
-	public BigDecimal add(int toUserId, BigDecimal amount) {
-		String sqlGetStartingBalanceFromReceiver = "SELECT balance FROM accounts WHERE user_id = ?;";
-		
-		SqlRowSet balance = jdbcTemplate.queryForRowSet(sqlGetStartingBalanceFromReceiver, toUserId);
-		
-		BigDecimal newBalance = new BigDecimal(0);
-		
-		while(balance.next()) {
-			String line = balance.getString("balance");
-			BigDecimal currBalance = new BigDecimal(line);
-			newBalance = currBalance.add(amount);
-		}
-		
-		String sqlUpdateBalance = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-		
-		jdbcTemplate.update(sqlUpdateBalance, toUserId, newBalance);
-		
-		return newBalance;
-	}
 	
 	@Override
 	public void transfer(int fromUserId, int toUserId, BigDecimal amount) {
-		withdraw(fromUserId, amount);
-		add(toUserId, amount);
+		accountdao.withdraw(fromUserId, amount);
+		accountdao.add(toUserId, amount);
 		
 		String sqlSaveTransferRecord = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) "
 				+ "VALUES (2, 2, ?, ?, ?);";
@@ -144,3 +105,4 @@ public class TransferSqlDAO implements TransferDAO {
     }
     
 }
+
