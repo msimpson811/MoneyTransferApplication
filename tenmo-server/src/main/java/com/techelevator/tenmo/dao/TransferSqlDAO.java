@@ -1,9 +1,13 @@
 package com.techelevator.tenmo.dao;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
+
+import com.techelevator.tenmo.model.Transfer;
 
 public class TransferSqlDAO implements TransferDAO {
 	
@@ -13,24 +17,38 @@ public class TransferSqlDAO implements TransferDAO {
         this.jdbcTemplate = jdbcTemplate;
     }
     
-//	@Override
-//	public void logTransfer(int fromUserId, int toUserId, BigDecimal amount) {
-//
-//		
-//	}
-
 	@Override
-	public Transfer getTransferById(int Id) {
-		// TODO Auto-generated method stub
-		return null;
+	public Transfer getTransferById(int id) {
+		String sqlGetAllTransfer = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount "
+				+ "FROM transfers WHERE transfer_id = ?;";
+		
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetAllTransfer, id);
+		
+		Transfer transfer = new Transfer();
+		
+		while (results.next()) {
+			transfer = mapRowToTransfer(results);
+		}
+		return transfer;
 	}
 
 	@Override
 	public List<Transfer> getAllTransfersByUserId(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		String sqlGetAllTransfers = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount "
+				+ "FROM transfers;";
+		
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetAllTransfers);
+		
+		List<Transfer> transfers = new ArrayList<>();
+		
+		while (results.next()) {
+			Transfer transfer = mapRowToTransfer(results);
+			transfers.add(transfer);
+		}
+		return transfers;
 	}
 
+	// cut this one
 	@Override
 	public BigDecimal withdraw(int fromUserId, BigDecimal amount) {
 		String sqlGetStartingBalanceFromSender = "SELECT balance FROM accounts WHERE user_id = ?;";
@@ -53,6 +71,7 @@ public class TransferSqlDAO implements TransferDAO {
 		return newBalance;
 	}
 
+	// cut this one
 	@Override
 	public BigDecimal add(int toUserId, BigDecimal amount) {
 		String sqlGetStartingBalanceFromReceiver = "SELECT balance FROM accounts WHERE user_id = ?;";
@@ -110,9 +129,16 @@ public class TransferSqlDAO implements TransferDAO {
 		}
 		return type;
 	}
-
-
-
-
-
+	
+    private Transfer mapRowToTransfer(SqlRowSet results) {
+        Transfer transfer = new Transfer();
+        transfer.setId(results.getInt("transfer_id"));
+        transfer.setTypeId(results.getInt("transfer_type_id"));
+        transfer.setStatusId(results.getInt("transfer_status_id"));
+        transfer.setFrom(results.getInt("account_from"));
+        transfer.setTo(results.getInt("account_to"));
+        transfer.setAmount(results.getBigDecimal("amount"));
+        return transfer;
+    }
+    
 }
