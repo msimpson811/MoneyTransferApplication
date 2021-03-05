@@ -10,6 +10,8 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientResponseException;
 import org.springframework.web.client.RestTemplate;
 
+import com.techelevator.tenmo.models.Transfer;
+
 public class TransferService {
 
 	// I'm not sure how we actually get the token here, is that something that rest
@@ -25,10 +27,10 @@ public class TransferService {
 
 	// what is the purpose of the getBody() after the restTemplate.exchange?
 	public Transfer getTransferById(int transferId) {
-		Transfer transfer = new Transfer();
+		Transfer transfer = new Transfer();               
 
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "/transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class);
+			transfer = restTemplate.exchange(BASE_URL + "/transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -43,7 +45,7 @@ public class TransferService {
 		Transfer[] transfers = null;
 
 		try {
-			transfers = restTemplate.exchange(BASE_URL + "/user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer.class);
+			transfers = restTemplate.exchange(BASE_URL + "/user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -64,7 +66,7 @@ public class TransferService {
 		transfer.setAmount(amount);
 		
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "/transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class);
+			transfer = restTemplate.exchange(BASE_URL + "/transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
