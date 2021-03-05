@@ -18,11 +18,9 @@ import com.techelevator.tenmo.model.Transfer;
 public class TransferController {
 
 	private TransferDAO transferDao;
-	private AuthenticationController authentication;
 	
-	public TransferController (TransferDAO transferDao, AuthenticationController authentication) {
+	public TransferController (TransferDAO transferDao) {
 		this.transferDao = transferDao;
-		this.authentication = authentication;
 	}
 	
 	@RequestMapping(path = "/user/{userId}/transfer", method = RequestMethod.GET)

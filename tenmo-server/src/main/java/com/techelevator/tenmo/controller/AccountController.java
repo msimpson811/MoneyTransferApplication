@@ -15,25 +15,23 @@ import com.techelevator.tenmo.model.Account;
 public class AccountController {
 	
 	private AccountDAO accountDao;
-	private AuthenticationController authentication;
-	public AccountController(AccountDAO accountDao, AuthenticationController authentication) {
-		this.accountDao = accountDao;
-		this.authentication = authentication;
-	}
 
+	public AccountController(AccountDAO accountDao) {
+		this.accountDao = accountDao;
+	}
 	
 	@RequestMapping(path = "/user/{userId}/account", method = RequestMethod.GET)
 	public Account getBalance(@PathVariable int userId) {
 		return accountDao.getBalance(userId);
 	}
 	
-	@RequestMapping(path = "/account", method = RequestMethod.POST)
+	@RequestMapping(path = "/withdraw", method = RequestMethod.POST)
 	public BigDecimal withdraw(@RequestParam int fromUserId, @RequestParam BigDecimal amount) {
 		return accountDao.withdraw(fromUserId, amount);
 		
 	}
 	
-	@RequestMapping(path = "/account", method = RequestMethod.POST)
+	@RequestMapping(path = "/receive", method = RequestMethod.POST)
 	public BigDecimal add (@RequestParam int toUserId, @RequestParam BigDecimal amount) {
 		return accountDao.withdraw(toUserId, amount);
 	}
