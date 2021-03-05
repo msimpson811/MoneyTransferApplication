@@ -29,8 +29,7 @@ public class AccountController {
 	}
 
 	@RequestMapping(path = "/withdraw", method = RequestMethod.PUT)
-	public BigDecimal withdraw(@RequestParam int fromUserId, @RequestParam BigDecimal amount,
-			@RequestBody Account account) {
+	public BigDecimal withdraw(@RequestParam int fromUserId, @RequestParam BigDecimal amount, @RequestBody Account account) {
 		return accountDao.withdraw(fromUserId, amount);
 
 	}
