@@ -21,26 +21,27 @@ import com.techelevator.tenmo.model.Transfer;
 public class TransferController {
 
 	private TransferDAO transferDao;
-	
-	public TransferController (TransferDAO transferDao) {
+
+	public TransferController(TransferDAO transferDao) {
 		this.transferDao = transferDao;
 	}
-	
+
 	@RequestMapping(path = "/user/{userId}/transfer", method = RequestMethod.GET)
 	public List<Transfer> list(@PathVariable int userId) {
-		
+
 		return transferDao.getAllTransfersByUserId(userId);
 	}
-	
+
 	@RequestMapping(path = "/transfer/{transferId}", method = RequestMethod.GET)
 	public Transfer getTransfer(@PathVariable int transferId) {
-		
+
 		return transferDao.getTransferById(transferId);
 	}
-	
+
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(path = "/transfer", method = RequestMethod.POST)
-	public void saveTransfer(@RequestParam int fromUserId, @RequestParam int toUserId, @RequestParam BigDecimal amount, @RequestBody Transfer transfer) {
-		transferDao.transfer(fromUserId, toUserId, amount);
+	public Transfer saveTransfer(@RequestParam int fromUserId, @RequestParam int toUserId, @RequestParam BigDecimal amount,
+			@RequestBody Transfer transfer) {
+		return transferDao.transfer(fromUserId, toUserId, amount);
 	}
 }
