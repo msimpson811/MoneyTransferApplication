@@ -30,7 +30,7 @@ public class TransferService {
 		Transfer transfer = new Transfer();               
 
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "/transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+			transfer = restTemplate.exchange(BASE_URL + "transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -45,7 +45,7 @@ public class TransferService {
 		Transfer[] transfers = null;
 
 		try {
-			transfers = restTemplate.exchange(BASE_URL + "/user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+			transfers = restTemplate.exchange(BASE_URL + "user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -66,7 +66,7 @@ public class TransferService {
 		transfer.setAmount(amount);
 		
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "/transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class).getBody();
+			transfer = restTemplate.exchange(BASE_URL + "transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());

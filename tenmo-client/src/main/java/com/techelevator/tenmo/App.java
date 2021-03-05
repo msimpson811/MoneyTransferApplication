@@ -1,9 +1,13 @@
 package com.techelevator.tenmo;
 
+import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.Transfer;
 import com.techelevator.tenmo.models.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -25,15 +29,19 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
+    private TransferService transferService;
+    private AccountService accountService;
 
     public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new TransferService(API_BASE_URL), new AccountService(API_BASE_URL));
     	app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService) {
+    public App(ConsoleService console, AuthenticationService authenticationService, TransferService transferService, AccountService accountService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
+		this.transferService = transferService;
+		this.accountService = accountService;
 	}
 
 	public void run() {
@@ -68,13 +76,32 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
-		
+		Account account = accountService.getBalance(currentUser.getUser().getId());
+		System.out.println("Your current account balance is: $" + account.getBalance());
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		Transfer[] transfers = transferService.getAllTransfersByUserId(currentUser.getUser().getId());
 		
+		System.out.println("-------------------------------------------\n" + 
+		"Transfers\n" + "ID \t From/To \t \t Amount \n" +
+		"-------------------------------------------\n");
+		
+		for (Transfer transfer : transfers) {
+			String output = transfer.getId() + " \t ";
+			if (transfer.getFrom() == currentUser.getUser().getId()) {
+				output += "From: " + currentUser.getUser().getUsername() + "\t \t $ ";
+			} else if (transfer.getTo() == currentUser.getUser().getId()) {
+				output += "To: " + "NEEDS OTHER USERNAME" + "\t \t $ ";
+			}
+			System.out.println(output + transfer.getAmount());
+		}
+		
+//		23          From: Bernice          $ 903.14
+//		79          To:    Larry           $  12.55
+//		---------
+//		Please enter transfer ID to view details (0 to cancel):
+//		
 	}
 
 	private void viewPendingRequests() {

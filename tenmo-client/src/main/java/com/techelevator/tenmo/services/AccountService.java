@@ -40,7 +40,7 @@ public class AccountService {
 	public void withdraw(int fromUserId, BigDecimal amount) {
 		
 		try {
-		restTemplate.exchange(BASE_URL + "/withdraw", HttpMethod.GET, makeAuthEntity(),Account.class).getBody();
+		restTemplate.exchange(BASE_URL + "withdraw", HttpMethod.GET, makeAuthEntity(),Account.class).getBody();
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
 
@@ -53,7 +53,7 @@ public class AccountService {
 	public void add(int toUserId, BigDecimal amount) {
 		
 		try {
-		restTemplate.exchange(BASE_URL + "/receive", HttpMethod.GET, makeAuthEntity(),Account.class).getBody();
+		restTemplate.exchange(BASE_URL + "receive", HttpMethod.GET, makeAuthEntity(),Account.class).getBody();
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
 
