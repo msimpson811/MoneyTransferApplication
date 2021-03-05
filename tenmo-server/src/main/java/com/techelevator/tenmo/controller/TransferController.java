@@ -37,6 +37,7 @@ public class TransferController {
 		return transferDao.getTransferById(transferId);
 	}
 	
+	// fix this to include a request body!!!
 	@RequestMapping(path = "/transfer", method = RequestMethod.POST)
 	public void saveTransfer(@RequestParam int fromUserId, @RequestParam int toUserId, @RequestParam BigDecimal amount) {
 		transferDao.transfer(fromUserId, toUserId, amount);
