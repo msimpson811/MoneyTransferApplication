@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
+import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.model.Account;
 
 @Component
@@ -32,7 +33,7 @@ public class AccountSqlDAO implements AccountDAO {
 	}
 
 	@Override
-	public BigDecimal withdraw(int fromUserId, BigDecimal amount) {
+	public BigDecimal withdraw(int fromUserId, BigDecimal amount) throws InsufficientBalanceException {
 		String sqlGetStartingBalanceFromSender = "SELECT balance FROM accounts WHERE user_id = ?;";
 
 		SqlRowSet balance = jdbcTemplate.queryForRowSet(sqlGetStartingBalanceFromSender, fromUserId);
@@ -42,6 +43,10 @@ public class AccountSqlDAO implements AccountDAO {
 		while (balance.next()) {
 			String line = balance.getString("balance");
 			BigDecimal currBalance = new BigDecimal(line);
+			
+			if (currBalance.compareTo(amount) == -1) {
+				throw new InsufficientBalanceException();
+			}
 			newBalance = currBalance.subtract(amount);
 		}
 
