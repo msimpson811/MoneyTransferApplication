@@ -14,13 +14,11 @@ import com.techelevator.tenmo.model.Transfer;
 public class TransferSqlDAO implements TransferDAO {
 	
 	private JdbcTemplate jdbcTemplate;
-	private AccountDAO accountdao;
 	
 	
 
-    public TransferSqlDAO(JdbcTemplate jdbcTemplate, AccountDAO accountdao) {
-    	this.accountdao = accountdao;
-        this.jdbcTemplate = jdbcTemplate;
+    public TransferSqlDAO(JdbcTemplate jdbcTemplate) {
+    	this.jdbcTemplate = jdbcTemplate;
     }
     
 	@Override
@@ -57,11 +55,6 @@ public class TransferSqlDAO implements TransferDAO {
 	
 	@Override
 	public Transfer transfer(int fromUserId, int toUserId, BigDecimal amount) {
-
-		accountdao.withdraw(fromUserId, amount);
-
-		accountdao.add(toUserId, amount);
-		
 		String sqlSaveTransferRecord = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) "
 				+ "VALUES (2, 2, ?, ?, ?) RETURNING transfer_id;";
 		

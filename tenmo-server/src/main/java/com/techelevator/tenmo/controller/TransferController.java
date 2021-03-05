@@ -3,6 +3,8 @@ package com.techelevator.tenmo.controller;
 import java.math.BigDecimal;
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -41,7 +43,7 @@ public class TransferController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(path = "/transfer", method = RequestMethod.POST)
 	public Transfer saveTransfer(@RequestParam int fromUserId, @RequestParam int toUserId, @RequestParam BigDecimal amount,
-			@RequestBody Transfer transfer) {
+			@Valid @RequestBody Transfer transfer) {
 		return transferDao.transfer(fromUserId, toUserId, amount);
 	}
 }
