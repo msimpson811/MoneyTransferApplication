@@ -8,7 +8,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-
 import com.techelevator.tenmo.model.Transfer;
 
 @Component
@@ -57,14 +56,20 @@ public class TransferSqlDAO implements TransferDAO {
 
 	
 	@Override
-	public void transfer(int fromUserId, int toUserId, BigDecimal amount) {
+	public Transfer transfer(int fromUserId, int toUserId, BigDecimal amount) {
+
 		accountdao.withdraw(fromUserId, amount);
+
 		accountdao.add(toUserId, amount);
 		
 		String sqlSaveTransferRecord = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) "
-				+ "VALUES (2, 2, ?, ?, ?);";
+				+ "VALUES (2, 2, ?, ?, ?) RETURNING transfer_id;";
 		
-		jdbcTemplate.update(sqlSaveTransferRecord, fromUserId, toUserId, amount);
+		int transferId = jdbcTemplate.queryForObject(sqlSaveTransferRecord, Integer.class, fromUserId, toUserId, amount);
+		
+		Transfer transfer = new Transfer(transferId, 2, 2, fromUserId, toUserId, amount);
+		
+		return transfer;
 	}
 
 	// Not sure if we will actually need this method
