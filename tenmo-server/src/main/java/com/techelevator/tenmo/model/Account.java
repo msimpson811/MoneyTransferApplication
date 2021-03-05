@@ -2,10 +2,19 @@ package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+
 public class Account {
 
+	@NotNull //might not need this one?
 	private int id;
+	
+	@NotNull
 	private int userId;
+	
+	@NotNull
+	@DecimalMin(value = "0.00", message = "Account balance cannot be below 0.00 TE bucks.")
 	private BigDecimal balance;
 	
 	public Account () {}

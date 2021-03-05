@@ -2,13 +2,27 @@ package com.techelevator.tenmo.model;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.DecimalMin;
+import javax.validation.constraints.NotNull;
+
 public class Transfer {
 
 	private int id;
+	
+	@NotNull
 	private int typeId;
+	
+	@NotNull
 	private int statusId;
+	
+	@NotNull
 	private int from;
+	
+	@NotNull
 	private int to;
+	
+	@NotNull
+	@DecimalMin(value = "0.01", message = "Minimum transfer amount is 0.01 TE bucks.")
 	private BigDecimal amount;
 
 	public Transfer() {
