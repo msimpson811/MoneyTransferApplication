@@ -1,9 +1,17 @@
 package com.techelevator.tenmo;
 
+import java.math.BigDecimal;
+
+import com.techelevator.tenmo.models.Account;
 import com.techelevator.tenmo.models.AuthenticatedUser;
+import com.techelevator.tenmo.models.Transfer;
+import com.techelevator.tenmo.models.User;
 import com.techelevator.tenmo.models.UserCredentials;
+import com.techelevator.tenmo.services.AccountService;
 import com.techelevator.tenmo.services.AuthenticationService;
 import com.techelevator.tenmo.services.AuthenticationServiceException;
+import com.techelevator.tenmo.services.TransferService;
+import com.techelevator.tenmo.services.UserService;
 import com.techelevator.view.ConsoleService;
 
 public class App {
@@ -25,15 +33,21 @@ private static final String API_BASE_URL = "http://localhost:8080/";
     private AuthenticatedUser currentUser;
     private ConsoleService console;
     private AuthenticationService authenticationService;
+    private TransferService transferService;
+    private AccountService accountService;
+    private UserService userService;
 
     public static void main(String[] args) {
-    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL));
+    	App app = new App(new ConsoleService(System.in, System.out), new AuthenticationService(API_BASE_URL), new TransferService(API_BASE_URL), new AccountService(API_BASE_URL), new UserService(API_BASE_URL));
     	app.run();
     }
 
-    public App(ConsoleService console, AuthenticationService authenticationService) {
+    public App(ConsoleService console, AuthenticationService authenticationService, TransferService transferService, AccountService accountService, UserService userService) {
 		this.console = console;
 		this.authenticationService = authenticationService;
+		this.transferService = transferService;
+		this.accountService = accountService;
+		this.userService = userService;
 	}
 
 	public void run() {
@@ -68,13 +82,46 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		// TODO Auto-generated method stub
-		
+		Account account = accountService.getBalance(currentUser.getUser().getId());
+		System.out.println("Your current account balance is: $" + account.getBalance());
 	}
 
 	private void viewTransferHistory() {
-		// TODO Auto-generated method stub
+		Transfer[] transfers = transferService.getAllTransfersByUserId(currentUser.getUser().getId());
 		
+		System.out.println("-------------------------------------------\n" + 
+		"Transfers\n" + "ID \t From/To \t \t Amount \n" +
+		"-------------------------------------------\n");
+		
+		for (Transfer transfer : transfers) {
+			String output = transfer.getId() + " \t ";
+			if (transfer.getFrom() == currentUser.getUser().getId()) {
+				output += "From: " + currentUser.getUser().getUsername() + "\t \t $ ";
+			} else if (transfer.getTo() == currentUser.getUser().getId()) {
+				output += "To: " + accountService.getUsernameFromAccountId(transfer.getTo()) + "\t \t $ ";
+			}
+			System.out.println(output + transfer.getAmount());
+		}
+		System.out.println("---------\n");
+		int transferId = console.getUserInputInteger("Please enter transfer ID to view details (0 to cancel)");
+		
+		if (transferId == 0) {
+			mainMenu();
+		}
+		
+		Transfer selectionTransfer = transferService.getTransferById(transferId);
+		
+		String output = "Id: " + selectionTransfer.getId() +
+				"\nFrom: " + accountService.getUsernameFromAccountId(selectionTransfer.getFrom()) +
+				"\nTo: " + accountService.getUsernameFromAccountId(selectionTransfer.getTo()) +
+				"\nType: " + selectionTransfer.getTypeDesc() + 
+				"\nStatus: " + selectionTransfer.getStatusDesc() +
+				"\nAmount: $" + selectionTransfer.getAmount();
+
+		System.out.println(output);
+		
+//		---------
+//		Please enter transfer ID to view details (0 to cancel): "
 	}
 
 	private void viewPendingRequests() {
@@ -83,8 +130,51 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void sendBucks() {
-		// TODO Auto-generated method stub
+		User[] users = userService.getAll();
 		
+		System.out.println("-------------------------------------------\n" + 
+				"Users\n" + "ID \t Name\n" +
+				"-------------------------------------------\n");
+		for (User user : users) {
+			System.out.println(user.getId() + "\t" + user.getUsername());
+		}
+
+		System.out.println("---------\n\n");
+		
+		int toUserId = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
+		if (toUserId == 0) {
+			mainMenu();
+		}
+		BigDecimal amount = new BigDecimal(console.getUserInput("Enter amount"));
+		int fromUserId = currentUser.getUser().getId();
+		
+		Account fromUser = accountService.getBalance(fromUserId);
+		Account toUser = accountService.getBalance(toUserId);
+		
+		BigDecimal fromBalance = fromUser.getBalance();
+		BigDecimal toBalance = toUser.getBalance();
+		
+		if (fromBalance.compareTo(amount) == -1) {
+			System.out.println("Insufficient Funds: Returning to Main Menu");
+			mainMenu();
+		}
+		
+		BigDecimal newFromBalance = fromBalance.subtract(amount);
+		BigDecimal newToBalance = toBalance.add(amount);
+		
+		fromUser.setBalance(newFromBalance);
+		toUser.setBalance(newToBalance);
+		
+		accountService.update(fromUser);
+		accountService.update(toUser);
+		
+		Transfer transfer = new Transfer();
+		transfer.setAmount(amount);
+		transfer.setFrom(fromUserId);
+		transfer.setTo(toUserId);
+		transfer.setStatusId(2);
+		transfer.setTypeId(2);
+		transferService.transfer(transfer);
 	}
 
 	private void requestBucks() {

@@ -14,9 +14,6 @@ import com.techelevator.tenmo.models.Transfer;
 
 public class TransferService {
 
-	// I'm not sure how we actually get the token here, is that something that rest
-	// or spring handles?
-	// does this need to be public like example in m02d13 client AuctionService?
 	private static String TOKEN = "";
 	private final String BASE_URL;
 	private RestTemplate restTemplate = new RestTemplate();
@@ -25,12 +22,11 @@ public class TransferService {
 		this.BASE_URL = url;
 	}
 
-	// what is the purpose of the getBody() after the restTemplate.exchange?
 	public Transfer getTransferById(int transferId) {
 		Transfer transfer = new Transfer();               
 
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "/transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+			transfer = restTemplate.exchange(BASE_URL + "transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -45,7 +41,7 @@ public class TransferService {
 		Transfer[] transfers = null;
 
 		try {
-			transfers = restTemplate.exchange(BASE_URL + "/user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+			transfers = restTemplate.exchange(BASE_URL + "user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -57,16 +53,9 @@ public class TransferService {
 		return transfers;
 	}
 	
-	public Transfer transfer(int fromUserId, int toUserId, BigDecimal amount) {
-		Transfer transfer = new Transfer();
-		transfer.setTypeId(2);
-		transfer.setStatusId(2);
-		transfer.setFrom(fromUserId);
-		transfer.setTo(toUserId);
-		transfer.setAmount(amount);
-		
+	public Transfer transfer(Transfer transfer) {	
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "/transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class).getBody();
+			transfer = restTemplate.exchange(BASE_URL + "transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());

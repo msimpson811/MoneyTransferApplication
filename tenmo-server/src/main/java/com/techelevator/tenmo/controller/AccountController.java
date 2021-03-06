@@ -31,14 +31,13 @@ public class AccountController {
 		return accountDao.getBalance(userId);
 	}
 
-	@RequestMapping(path = "/withdraw", method = RequestMethod.PUT)
-	public BigDecimal withdraw(@RequestParam int fromUserId, @RequestParam BigDecimal amount,@Valid @RequestBody Account account) throws InsufficientBalanceException {
-		return accountDao.withdraw(fromUserId, amount);
-
+	@RequestMapping(path = "/update", method = RequestMethod.PUT)
+	public void updateBalance(@Valid @RequestBody Account account){
+		accountDao.updateBalance(account);
 	}
-
-	@RequestMapping(path = "/receive", method = RequestMethod.PUT)
-	public BigDecimal add(@RequestParam int toUserId, @RequestParam BigDecimal amount,@Valid @RequestBody Account account) {
-		return accountDao.add(toUserId, amount);
+	
+	@RequestMapping(path = "/username", method = RequestMethod.GET)
+		public String getUsernameFromAccountId(@RequestParam int accountId) {
+		return accountDao.getUsernameFromAccountId(accountId);
 	}
 }

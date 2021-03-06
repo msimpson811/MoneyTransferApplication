@@ -16,10 +16,10 @@ public class Transfer {
 	private int statusId;
 	
 	@NotNull
-	private int from;
+	private int account_from;
 	
 	@NotNull
-	private int to;
+	private int account_to;
 	
 	@NotNull
 	@DecimalMin(value = "0.01", message = "Minimum transfer amount is 0.01 TE bucks.")
@@ -32,8 +32,8 @@ public class Transfer {
 		this.id = id;
 		this.typeId = typeId;
 		this.statusId = statusId;
-		this.from = from;
-		this.to = to;
+		this.account_from = from;
+		this.account_to = to;
 		this.amount = amount;
 	}
 
@@ -61,20 +61,20 @@ public class Transfer {
 		this.statusId = statusId;
 	}
 
-	public int getFrom() {
-		return from;
+	public int getAccountFrom() {
+		return account_from;
 	}
 
-	public void setFrom(int from) {
-		this.from = from;
+	public void setAccountFrom(int from) {
+		this.account_from = from;
 	}
 
-	public int getTo() {
-		return to;
+	public int getAccountTo() {
+		return account_to;
 	}
 
-	public void setTo(int to) {
-		this.to = to;
+	public void setAccountTo(int to) {
+		this.account_to = to;
 	}
 
 	public BigDecimal getAmount() {

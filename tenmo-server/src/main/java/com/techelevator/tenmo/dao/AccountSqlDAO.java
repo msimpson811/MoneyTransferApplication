@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
 
-import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.model.Account;
 
 @Component
@@ -33,51 +32,10 @@ public class AccountSqlDAO implements AccountDAO {
 	}
 
 	@Override
-	public BigDecimal withdraw(int fromUserId, BigDecimal amount) throws InsufficientBalanceException {
-		String sqlGetStartingBalanceFromSender = "SELECT balance FROM accounts WHERE user_id = ?;";
-
-		SqlRowSet balance = jdbcTemplate.queryForRowSet(sqlGetStartingBalanceFromSender, fromUserId);
-
-		BigDecimal newBalance = new BigDecimal(0);
-
-		while (balance.next()) {
-			String line = balance.getString("balance");
-			BigDecimal currBalance = new BigDecimal(line);
-			
-			if (currBalance.compareTo(amount) == -1) {
-				throw new InsufficientBalanceException();
-			}
-			newBalance = currBalance.subtract(amount);
-		}
-
+	public void updateBalance(Account account){
 		String sqlUpdateBalance = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
 
-		jdbcTemplate.update(sqlUpdateBalance, fromUserId, newBalance);
-
-		return newBalance;
-
-	}
-
-	@Override
-	public BigDecimal add(int toUserId, BigDecimal amount) {
-		String sqlGetStartingBalanceFromReceiver = "SELECT balance FROM accounts WHERE user_id = ?;";
-
-		SqlRowSet balance = jdbcTemplate.queryForRowSet(sqlGetStartingBalanceFromReceiver, toUserId);
-
-		BigDecimal newBalance = new BigDecimal(0);
-
-		while (balance.next()) {
-			String line = balance.getString("balance");
-			BigDecimal currBalance = new BigDecimal(line);
-			newBalance = currBalance.add(amount);
-		}
-
-		String sqlUpdateBalance = "UPDATE accounts SET balance = ? WHERE user_id = ?;";
-
-		jdbcTemplate.update(sqlUpdateBalance, toUserId, newBalance);
-
-		return newBalance;
-
+		jdbcTemplate.update(sqlUpdateBalance, account.getBalance(), account.getUserId());
 	}
 
 	private Account mapRowToAccount(SqlRowSet results) {
@@ -87,5 +45,18 @@ public class AccountSqlDAO implements AccountDAO {
 		account.setBalance(results.getBigDecimal("balance"));
 		return account;
 
+	}
+
+	@Override
+	public String getUsernameFromAccountId(int accountId) {
+		String sqlGetUsernameFromAccountID = "SELECT username FROM users JOIN accounts ON accounts.user_id = users.user_id WHERE account_id = ?;";
+		
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetUsernameFromAccountID, accountId);
+		
+		String username = "";
+		while(results.next()) {
+			username = results.getString("username");
+		}
+		return username;
 	}
 }
