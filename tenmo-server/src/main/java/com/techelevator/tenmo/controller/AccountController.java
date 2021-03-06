@@ -36,8 +36,8 @@ public class AccountController {
 		accountDao.updateBalance(account);
 	}
 	
-	@RequestMapping(path = "/username", method = RequestMethod.GET)
-		public String getUsernameFromAccountId(@RequestParam int accountId) {
+	@RequestMapping(path = "/username/{accountId}", method = RequestMethod.GET)
+		public String getUsernameFromAccountId(@PathVariable int accountId) {
 		return accountDao.getUsernameFromAccountId(accountId);
 	}
 }
