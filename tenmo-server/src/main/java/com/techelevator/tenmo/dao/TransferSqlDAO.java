@@ -54,15 +54,13 @@ public class TransferSqlDAO implements TransferDAO {
 
 	
 	@Override
-	public Transfer transfer(int fromUserId, int toUserId, BigDecimal amount) {
+	public Transfer transfer(Transfer transfer) {
 		String sqlSaveTransferRecord = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) "
-				+ "VALUES (2, 2, ?, ?, ?) RETURNING transfer_id;";
+				+ "VALUES (2, 2, ?, ?, ?);";
 		
-		int transferId = jdbcTemplate.queryForObject(sqlSaveTransferRecord, Integer.class, fromUserId, toUserId, amount);
+		Transfer newTransfer = jdbcTemplate.queryForObject(sqlSaveTransferRecord, Transfer.class, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		
-		Transfer transfer = new Transfer(transferId, 2, 2, fromUserId, toUserId, amount);
-		
-		return transfer;
+		return newTransfer;
 	}
 
 	// Not sure if we will actually need this method
@@ -98,8 +96,8 @@ public class TransferSqlDAO implements TransferDAO {
         transfer.setId(results.getInt("transfer_id"));
         transfer.setTypeId(results.getInt("transfer_type_id"));
         transfer.setStatusId(results.getInt("transfer_status_id"));
-        transfer.setFrom(results.getInt("account_from"));
-        transfer.setTo(results.getInt("account_to"));
+        transfer.setAccountFrom(results.getInt("account_from"));
+        transfer.setAccountTo(results.getInt("account_to"));
         transfer.setAmount(results.getBigDecimal("amount"));
         return transfer;
     }

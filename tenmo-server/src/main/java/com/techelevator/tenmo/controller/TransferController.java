@@ -42,8 +42,7 @@ public class TransferController {
 
 	@ResponseStatus(HttpStatus.CREATED)
 	@RequestMapping(path = "/transfer", method = RequestMethod.POST)
-	public Transfer saveTransfer(@RequestParam int fromUserId, @RequestParam int toUserId, @RequestParam BigDecimal amount,
-			@Valid @RequestBody Transfer transfer) {
-		return transferDao.transfer(fromUserId, toUserId, amount);
+	public Transfer saveTransfer(@Valid @RequestBody Transfer transfer) {
+		return transferDao.transfer(transfer);
 	}
 }

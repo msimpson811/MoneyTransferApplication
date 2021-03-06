@@ -7,7 +7,6 @@ import javax.validation.constraints.NotNull;
 
 public class Account {
 
-	@NotNull //might not need this one?
 	private int id;
 	
 	@NotNull
