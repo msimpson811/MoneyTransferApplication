@@ -121,9 +121,6 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 				"\nAmount: $" + selectionTransfer.getAmount();
 
 		System.out.println(output);
-		
-//		---------
-//		Please enter transfer ID to view details (0 to cancel): "
 	}
 
 	private void viewPendingRequests() {

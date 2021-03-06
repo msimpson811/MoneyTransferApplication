@@ -1,7 +1,5 @@
 package com.techelevator.tenmo.services;
 
-import java.math.BigDecimal;
-
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
