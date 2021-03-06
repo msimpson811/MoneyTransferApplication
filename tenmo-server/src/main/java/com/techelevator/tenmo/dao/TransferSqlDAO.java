@@ -58,8 +58,12 @@ public class TransferSqlDAO implements TransferDAO {
 		String sqlSaveTransferRecord = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) "
 				+ "VALUES (2, 2, ?, ?, ?);";
 		
-		Transfer newTransfer = jdbcTemplate.queryForObject(sqlSaveTransferRecord, Transfer.class, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlSaveTransferRecord, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		
+		Transfer newTransfer = new Transfer();
+		if(results.next()) {
+			newTransfer = mapRowToTransfer(results);
+		}
 		return newTransfer;
 	}
 
