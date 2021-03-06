@@ -1,6 +1,5 @@
 package com.techelevator.tenmo.dao;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,9 +38,9 @@ public class TransferSqlDAO implements TransferDAO {
 	@Override
 	public List<Transfer> getAllTransfersByUserId(int id) {
 		String sqlGetAllTransfers = "SELECT transfer_id, transfer_type_id, transfer_status_id, account_from, account_to, amount "
-				+ "FROM transfers;";
+				+ "FROM transfers WHERE account_from = ? OR account_to = ?;";
 		
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetAllTransfers);
+		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetAllTransfers, id, id);
 		
 		List<Transfer> transfers = new ArrayList<>();
 		
@@ -56,43 +55,13 @@ public class TransferSqlDAO implements TransferDAO {
 	@Override
 	public Transfer transfer(Transfer transfer) {
 		String sqlSaveTransferRecord = "INSERT INTO transfers (transfer_type_id, transfer_status_id, account_from, account_to, amount) "
-				+ "VALUES (2, 2, ?, ?, ?);";
+				+ "VALUES (2, 2, ?, ?, ?) RETURNING transfer_id;";
 		
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlSaveTransferRecord, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
+		int transferId = jdbcTemplate.queryForObject(sqlSaveTransferRecord, Integer.class, transfer.getAccountFrom(), transfer.getAccountTo(), transfer.getAmount());
 		
-		Transfer newTransfer = new Transfer();
-		if(results.next()) {
-			newTransfer = mapRowToTransfer(results);
-		}
-		return newTransfer;
-	}
-
-	// Not sure if we will actually need this method
-	@Override
-	public String getTransferStatus(int id) {
-		String sqlGetStatus = "SELECT transfer_status_desc FROM transfer_statuses WHERE transfer_status_id = ?;";
+		transfer.setId(transferId);
 		
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetStatus, id);
-		
-		String status = "";
-		while(results.next()) {
-			status = results.getString("transfer_status_id");
-		}
-		return status;
-	}
-
-	// Not sure if we will actually need this method
-	@Override
-	public String getTransferType(int id) {
-		String sqlGetType = "SELECT transfer_type_desc FROM transfer_types WHERE transfer_type_id = ?;";
-		
-		SqlRowSet results = jdbcTemplate.queryForRowSet(sqlGetType, id);
-		
-		String type = "";
-		while(results.next()) {
-			type = results.getString("transfer_status_id");
-		}
-		return type;
+		return transfer;
 	}
 	
     private Transfer mapRowToTransfer(SqlRowSet results) {

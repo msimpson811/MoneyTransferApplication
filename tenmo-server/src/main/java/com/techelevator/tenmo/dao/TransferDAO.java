@@ -11,8 +11,4 @@ public interface TransferDAO {
 	List<Transfer> getAllTransfersByUserId(int id);
 	
 	Transfer transfer(Transfer transfer);
-	
-	String getTransferStatus(int id);
-	
-	String getTransferType(int id);
 }

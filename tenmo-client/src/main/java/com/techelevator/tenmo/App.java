@@ -94,14 +94,16 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		"-------------------------------------------\n");
 		
 		for (Transfer transfer : transfers) {
-			String output = transfer.getId() + " \t ";
-			if (transfer.getFrom() == currentUser.getUser().getId()) {
-				output += "From: " + currentUser.getUser().getUsername() + "\t \t $ ";
-			} else if (transfer.getTo() == currentUser.getUser().getId()) {
-				output += "To: " + accountService.getUsernameFromAccountId(transfer.getTo()) + "\t \t $ ";
+			String output = "";
+			if (transfer.getAccountFrom() == currentUser.getUser().getId()) {
+				output = transfer.getId() + "\tFrom: " + currentUser.getUser().getUsername() + "\t \t $ ";
+			} else if (transfer.getAccountTo() == currentUser.getUser().getId()) {
+				output = transfer.getId() + "\tTo: " + accountService.getUsernameFromAccountId(transfer.getAccountTo()) + "\t \t $ ";
 			}
+			
 			System.out.println(output + transfer.getAmount());
 		}
+		
 		System.out.println("---------\n");
 		int transferId = console.getUserInputInteger("Please enter transfer ID to view details (0 to cancel)");
 		
@@ -112,8 +114,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		Transfer selectionTransfer = transferService.getTransferById(transferId);
 		
 		String output = "Id: " + selectionTransfer.getId() +
-				"\nFrom: " + accountService.getUsernameFromAccountId(selectionTransfer.getFrom()) +
-				"\nTo: " + accountService.getUsernameFromAccountId(selectionTransfer.getTo()) +
+				"\nFrom: " + accountService.getUsernameFromAccountId(selectionTransfer.getAccountFrom()) +
+				"\nTo: " + accountService.getUsernameFromAccountId(selectionTransfer.getAccountTo()) +
 				"\nType: " + selectionTransfer.getTypeDesc() + 
 				"\nStatus: " + selectionTransfer.getStatusDesc() +
 				"\nAmount: $" + selectionTransfer.getAmount();
@@ -170,8 +172,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		
 		Transfer transfer = new Transfer();
 		transfer.setAmount(amount);
-		transfer.setFrom(fromUserId);
-		transfer.setTo(toUserId);
+		transfer.setAccountFrom(fromUserId);
+		transfer.setAccountTo(toUserId);
 		transfer.setStatusId(2);
 		transfer.setTypeId(2);
 		transferService.transfer(transfer);

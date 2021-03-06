@@ -54,7 +54,7 @@ public class AccountService {
 	public String getUsernameFromAccountId(int accountId) {
 		String username = "";
 		try {
-			username = restTemplate.exchange(BASE_URL + "username", HttpMethod.GET, makeAuthEntity(), String.class).getBody();
+			username = restTemplate.exchange(BASE_URL + "username/" + accountId, HttpMethod.GET, makeAuthEntity(), String.class).getBody();
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
 
