@@ -11,7 +11,7 @@ import com.techelevator.tenmo.dao.UserDAO;
 import com.techelevator.tenmo.model.User;
 
 @RestController
-//@PreAuthorize("isAuthorized()")
+@PreAuthorize("isAuthenticated()")
 public class UserController {
 
 	private UserDAO userDao;
