@@ -12,7 +12,6 @@ import com.techelevator.tenmo.models.Transfer;
 
 public class TransferService {
 
-	private static String TOKEN = "";
 	private final String BASE_URL;
 	private RestTemplate restTemplate = new RestTemplate();
 
@@ -20,11 +19,11 @@ public class TransferService {
 		this.BASE_URL = url;
 	}
 
-	public Transfer getTransferById(int transferId) {
+	public Transfer getTransferById(int transferId, String token) {
 		Transfer transfer = new Transfer();               
 
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "transfer/" + transferId, HttpMethod.GET, makeAuthEntity(), Transfer.class).getBody();
+			transfer = restTemplate.exchange(BASE_URL + "transfer/" + transferId, HttpMethod.GET, makeAuthEntity(token), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -35,11 +34,11 @@ public class TransferService {
 		return transfer;
 	}
 
-	public Transfer[] getAllTransfersByUserId(int userId) {
+	public Transfer[] getAllTransfersByUserId(int userId, String token) {
 		Transfer[] transfers = null;
 
 		try {
-			transfers = restTemplate.exchange(BASE_URL + "user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(), Transfer[].class).getBody();
+			transfers = restTemplate.exchange(BASE_URL + "user/" + userId + "/transfer", HttpMethod.GET, makeAuthEntity(token), Transfer[].class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -51,9 +50,9 @@ public class TransferService {
 		return transfers;
 	}
 	
-	public Transfer transfer(Transfer transfer) {	
+	public Transfer transfer(Transfer transfer, String token) {	
 		try {
-			transfer = restTemplate.exchange(BASE_URL + "transfer", HttpMethod.POST, makeTransferEntity(transfer), Transfer.class).getBody();
+			transfer = restTemplate.exchange(BASE_URL + "transfer", HttpMethod.POST, makeTransferEntity(transfer, token), Transfer.class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -64,17 +63,17 @@ public class TransferService {
 		return transfer;
 	}
 
-    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer) {
+    private HttpEntity<Transfer> makeTransferEntity(Transfer transfer, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(TOKEN);
+        headers.setBearerAuth(token);
         HttpEntity<Transfer> entity = new HttpEntity<>(transfer, headers);
         return entity;
       }
 
-	private HttpEntity makeAuthEntity() {
+	private HttpEntity makeAuthEntity(String token) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(TOKEN);
+		headers.setBearerAuth(token);
 		HttpEntity entity = new HttpEntity<>(headers);
 		return entity;
 	}

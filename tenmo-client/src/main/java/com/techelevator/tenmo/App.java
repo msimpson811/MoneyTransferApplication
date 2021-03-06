@@ -82,12 +82,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewCurrentBalance() {
-		Account account = accountService.getBalance(currentUser.getUser().getId());
+		String token = currentUser.getToken();
+		Account account = accountService.getBalance(currentUser.getUser().getId(), token);
 		System.out.println("Your current account balance is: $" + account.getBalance());
 	}
 
 	private void viewTransferHistory() {
-		Transfer[] transfers = transferService.getAllTransfersByUserId(currentUser.getUser().getId());
+		String token = currentUser.getToken();
+		Transfer[] transfers = transferService.getAllTransfersByUserId(currentUser.getUser().getId(), token);
 		
 		System.out.println("-------------------------------------------\n" + 
 		"Transfers\n" + "ID \t From/To \t \t Amount \n" +
@@ -98,7 +100,7 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			if (transfer.getAccountFrom() == currentUser.getUser().getId()) {
 				output = transfer.getId() + "\tFrom: " + currentUser.getUser().getUsername() + "\t \t $ ";
 			} else if (transfer.getAccountTo() == currentUser.getUser().getId()) {
-				output = transfer.getId() + "\tTo: " + accountService.getUsernameFromAccountId(transfer.getAccountTo()) + "\t \t $ ";
+				output = transfer.getId() + "\tTo: " + accountService.getUsernameFromAccountId(transfer.getAccountTo(), token) + "\t \t $ ";
 			}
 			
 			System.out.println(output + transfer.getAmount());
@@ -111,11 +113,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 			mainMenu();
 		}
 		
-		Transfer selectionTransfer = transferService.getTransferById(transferId);
+		Transfer selectionTransfer = transferService.getTransferById(transferId, token);
 		
 		String output = "Id: " + selectionTransfer.getId() +
-				"\nFrom: " + accountService.getUsernameFromAccountId(selectionTransfer.getAccountFrom()) +
-				"\nTo: " + accountService.getUsernameFromAccountId(selectionTransfer.getAccountTo()) +
+				"\nFrom: " + accountService.getUsernameFromAccountId(selectionTransfer.getAccountFrom(), token) +
+				"\nTo: " + accountService.getUsernameFromAccountId(selectionTransfer.getAccountTo(), token) +
 				"\nType: " + selectionTransfer.getTypeDesc() + 
 				"\nStatus: " + selectionTransfer.getStatusDesc() +
 				"\nAmount: $" + selectionTransfer.getAmount();
@@ -124,12 +126,14 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 	}
 
 	private void viewPendingRequests() {
+		String token = currentUser.getToken();
 		// TODO Auto-generated method stub
 		
 	}
 
 	private void sendBucks() {
-		User[] users = userService.getAll();
+		String token = currentUser.getToken();
+		User[] users = userService.getAll(token);
 		
 		System.out.println("-------------------------------------------\n" + 
 				"Users\n" + "ID \t Name\n" +
@@ -147,8 +151,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		BigDecimal amount = new BigDecimal(console.getUserInput("Enter amount"));
 		int fromUserId = currentUser.getUser().getId();
 		
-		Account fromUser = accountService.getBalance(fromUserId);
-		Account toUser = accountService.getBalance(toUserId);
+		Account fromUser = accountService.getBalance(fromUserId, token);
+		Account toUser = accountService.getBalance(toUserId, token);
 		
 		BigDecimal fromBalance = fromUser.getBalance();
 		BigDecimal toBalance = toUser.getBalance();
@@ -164,8 +168,8 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		fromUser.setBalance(newFromBalance);
 		toUser.setBalance(newToBalance);
 		
-		accountService.update(fromUser);
-		accountService.update(toUser);
+		accountService.update(fromUser, token);
+		accountService.update(toUser, token);
 		
 		Transfer transfer = new Transfer();
 		transfer.setAmount(amount);
@@ -173,10 +177,11 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		transfer.setAccountTo(toUserId);
 		transfer.setStatusId(2);
 		transfer.setTypeId(2);
-		transferService.transfer(transfer);
+		transferService.transfer(transfer, token);
 	}
 
 	private void requestBucks() {
+		String token = currentUser.getToken();
 		// TODO Auto-generated method stub
 		
 	}

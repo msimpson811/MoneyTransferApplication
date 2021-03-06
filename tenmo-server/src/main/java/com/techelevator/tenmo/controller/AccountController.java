@@ -1,7 +1,5 @@
 package com.techelevator.tenmo.controller;
 
-import java.math.BigDecimal;
-
 import javax.validation.Valid;
 
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -9,15 +7,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.techelevator.tenmo.dao.AccountDAO;
-import com.techelevator.tenmo.exceptions.InsufficientBalanceException;
 import com.techelevator.tenmo.model.Account;
 
 @RestController
-//@PreAuthorize("isAuthenticated()")
+@PreAuthorize("isAuthenticated()")
 public class AccountController {
 
 	private AccountDAO accountDao;

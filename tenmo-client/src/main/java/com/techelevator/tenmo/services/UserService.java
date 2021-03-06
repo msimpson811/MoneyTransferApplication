@@ -11,7 +11,6 @@ import com.techelevator.tenmo.models.User;
 
 public class UserService {
 
-	private static String TOKEN = "";
 	private final String BASE_URL;
 	private RestTemplate restTemplate = new RestTemplate();
 	
@@ -19,10 +18,10 @@ public class UserService {
 		this.BASE_URL = url;
 	}
 	
-	public User[] getAll() {
+	public User[] getAll(String token) {
 		User[] users = null;
 		try {
-			users = restTemplate.exchange(BASE_URL + "user", HttpMethod.GET, makeAuthEntity(), User[].class).getBody();
+			users = restTemplate.exchange(BASE_URL + "user", HttpMethod.GET, makeAuthEntity(token), User[].class).getBody();
 
 		} catch (RestClientResponseException e) {
 			System.out.println(e.getRawStatusCode() + " " + e.getStatusText());
@@ -33,9 +32,9 @@ public class UserService {
 		return users;
 	}
 	
-	private HttpEntity makeAuthEntity() {
+	private HttpEntity makeAuthEntity(String token) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.setBearerAuth(TOKEN);
+		headers.setBearerAuth(token);
 		HttpEntity entity = new HttpEntity<>(headers);
 		return entity;
 	}
