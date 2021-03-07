@@ -15,7 +15,7 @@ import org.junit.Assert;
 
 public class UserSqlDAOIntegrationTest extends BaseDAOTests {
 	
-	private UserDAO dao;
+	private UserDAO userDao;
 	private JdbcTemplate jdbcTemplate;
 	private User user1;
 	private User user2;
@@ -24,24 +24,31 @@ public class UserSqlDAOIntegrationTest extends BaseDAOTests {
 	@Before
 	public void setup() {
 		jdbcTemplate = new JdbcTemplate(dataSource);
-		dao = new UserSqlDAO(jdbcTemplate);
+		userDao = new UserSqlDAO(jdbcTemplate);
 		
-//		String sqlTruncateUsers = "TRUNCATE TABLE users CASCADE";
-//		
-//		jdbcTemplate.update(sqlTruncateUsers);
-//		
+		String sqlTruncateUsers = "TRUNCATE TABLE users CASCADE";
+		
+		jdbcTemplate.update(sqlTruncateUsers);
+		
+		user1 = new User();
+		user2 = new User();
+		user3 = new User();
+		
 		user1.setUsername("One");
 		user2.setUsername("Two");
 		user3.setUsername("Three");
 		user1.setId(10000L);
 		user2.setId(20000L);
 		user3.setId(30000L);
+		user1.setPassword("blah");
+		user2.setPassword("bleh");
+		user3.setPassword("meh");
 		
-		String sqlAddUser = "INSERT INTO users (user_id, username) VALUES (?, ?);";
+		String sqlAddUser = "INSERT INTO users (user_id, username, password_hash) VALUES (?, ?, ?);";
 		
-		jdbcTemplate.update(sqlAddUser, user1.getId(), user1.getUsername());
-		jdbcTemplate.update(sqlAddUser, user2.getId(), user2.getUsername());
-		jdbcTemplate.update(sqlAddUser, user3.getId(), user3.getUsername());
+		jdbcTemplate.update(sqlAddUser, user1.getId(), user1.getUsername(), user1.getPassword());
+		jdbcTemplate.update(sqlAddUser, user2.getId(), user2.getUsername(), user2.getPassword());
+		jdbcTemplate.update(sqlAddUser, user3.getId(), user3.getUsername(), user3.getPassword());
 		
 	}
 	
@@ -58,9 +65,9 @@ public class UserSqlDAOIntegrationTest extends BaseDAOTests {
 		long threeResult = user3.getId();
 				
 		//Act
-		long user1Result = dao.findIdByUsername("ONE");
-		long user2Result = dao.findIdByUsername("Two");
-		long user3Result = dao.findIdByUsername("three");
+		long user1Result = userDao.findIdByUsername("ONE");
+		long user2Result = userDao.findIdByUsername("Two");
+		long user3Result = userDao.findIdByUsername("three");
 		
 		//Assert
 		Assert.assertEquals(oneResult, user1Result);
@@ -78,7 +85,7 @@ public class UserSqlDAOIntegrationTest extends BaseDAOTests {
 		expected.add(user3);
 		
 		//Act
-		List<User> result = dao.findAll();
+		List<User> result = userDao.findAll();
 		
 		//Assert
 		Assert.assertEquals(expected.size(), result.size());
@@ -91,9 +98,9 @@ public class UserSqlDAOIntegrationTest extends BaseDAOTests {
 		
 		
 		//Act
-		User result1 = dao.findByUsername("one");
-		User result2 = dao.findByUsername("TWO");
-		User result3 = dao.findByUsername("Three");
+		User result1 = userDao.findByUsername("one");
+		User result2 = userDao.findByUsername("TWO");
+		User result3 = userDao.findByUsername("Three");
 		
 		//Assert
 		Assert.assertEquals(user1.getUsername(), result1.getUsername());
@@ -111,7 +118,7 @@ public class UserSqlDAOIntegrationTest extends BaseDAOTests {
 		String password = "supersecurepassword";
 		
 		//Act
-		boolean result = dao.create(username, password);
+		boolean result = userDao.create(username, password);
 		
 		//Assert
 		Assert.assertTrue("Create shoudl return true when successful", result);
