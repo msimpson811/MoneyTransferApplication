@@ -24,7 +24,7 @@ public class UserSqlDAO implements UserDAO {
 
     @Override
     public int findIdByUsername(String username) {
-        return jdbcTemplate.queryForObject("select user_id from users where username = ?", int.class, username);
+        return jdbcTemplate.queryForObject("select user_id from users where username ILIKE ?", int.class, username);
     }
 
     @Override

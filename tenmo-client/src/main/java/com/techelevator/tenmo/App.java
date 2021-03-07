@@ -107,12 +107,30 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 		}
 		
 		System.out.println("---------\n");
-		int transferId = console.getUserInputInteger("Please enter transfer ID to view details (0 to cancel)");
+		String input = console.getUserInput("Please enter transfer ID to view details (0 to cancel)");
 		
-		if (transferId == 0) {
+		//input validation
+		if (input.matches("[\\D]") || !input.matches("[\\d]")) {
+			System.out.println("Please select a valid transaction Id. Returning to Main Menu.");
+			mainMenu();
+		} else if (input.equals("0")) {
 			mainMenu();
 		}
 		
+		int transferId = Integer.parseInt(input);
+		
+		int matchCount = 0;
+		for (Transfer transfer : transfers) {
+			if (transferId == transfer.getId()) {
+				matchCount++;
+			}
+		}
+		
+		if (matchCount == 0) {
+			System.out.println("Please select a valid transaction Id. Returning to Main Menu.");
+			mainMenu();
+		}
+
 		Transfer selectionTransfer = transferService.getTransferById(transferId, token);
 		
 		String output = "Id: " + selectionTransfer.getId() +
@@ -144,11 +162,45 @@ private static final String API_BASE_URL = "http://localhost:8080/";
 
 		System.out.println("---------\n\n");
 		
-		int toUserId = console.getUserInputInteger("Enter ID of user you are sending to (0 to cancel)");
-		if (toUserId == 0) {
+		String input = console.getUserInput("Enter ID of user you are sending to (0 to cancel)");
+		
+		//input validation
+		if (input.matches("[\\D]") || !input.matches("[\\d]")) {
+			System.out.println("Please select a valid user Id. Returning to Main Menu.");
+			mainMenu();
+		} else if (input.equals("0")) {
 			mainMenu();
 		}
-		BigDecimal amount = new BigDecimal(console.getUserInput("Enter amount"));
+				
+		int toUserId = Integer.parseInt(input);
+				
+		int matchCount = 0;
+		for (User user : users) {
+			if (toUserId == user.getId()) {
+				matchCount++;
+			}
+		}
+				
+		if (matchCount == 0) {
+			System.out.println("Please select a valid user Id. Returning to Main Menu.");
+			mainMenu();
+		}
+	
+		
+		String amountInput = "";
+		while(true) {
+			amountInput = console.getUserInput("Enter amount");
+			if (!amountInput.matches("(([1-9]\\d{0,2}(,\\d{3})*)|(([1-9]\\d*)?\\d))(\\.\\d\\d)?$")){
+				System.out.println("Please select a valid amount. Returning to Main Menu.");
+				continue;
+			} else if (amountInput.equals("0")) {
+				System.out.println("Please enter an amount greater than 0. Returning to Main Menu");
+				continue;
+			}
+			break;
+		}
+		
+		BigDecimal amount = new BigDecimal(amountInput);
 		int fromUserId = currentUser.getUser().getId();
 		
 		Account fromUser = accountService.getBalance(fromUserId, token);
